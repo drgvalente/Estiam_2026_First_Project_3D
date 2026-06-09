@@ -76,11 +76,44 @@ public class BetterPlayerController : MonoBehaviour
 
     private void CheckGround()
     {
+        // Raycast casts an invisible line from the base of character going down
+        // If it hits something inside ground layer, returns true
+        Vector3 rayOrigin = transform.position; // stores the player position
+        isOnFloor = Physics.Raycast(rayOrigin, Vector3.down, radiusDistance + 1f, groundLayer);
 
+        // create a visual Debug for the ray: draws the line in the Scene tab in Unity
+        Debug.DrawRay(rayOrigin, Vector3.down * (radiusDistance + 1f), isOnFloor ? Color.green : Color.red);
     }
 
     private void ApplyMoveForces()
     {
+        // get the WASD or ARROWS in keyboard
+        float inputHorizontal = Input.GetAxis("Horizontal"); // A/D or Left/Right
+        float inputVertical = Input.GetAxis("Vertical"); // W/S or Up/Down
 
+        // converts the input in the LOCAL axis of the character
+        // transform.right = X local axis (left/right of the character)
+        // transform.forward = Z local axis (forward/back of the character)
+        Vector3 moveDirection = (transform.right * inputHorizontal) + (transform.forward * inputVertical);
+
+        // Normalizes the vextor so the speed is the same in diagonal movements
+        moveDirection.Normalize();
+
+        // Apply the force as a continuous impulse
+        rb.AddForce(moveDirection * moveStregth, ForceMode.Force);
+
+        // FRICTION: If is on floor and not pressing any key, apply a "drag" (friction)
+        // this will make the character stops sliding when player releases the buttons
+        if (isOnFloor)
+        {
+            // if there's no move inputs, slows the character in X and Z axis
+            if (inputHorizontal == 0 && inputVertical == 0)
+            {
+                Vector3 currentSpeed = rb.linearVelocity;
+                currentSpeed.x *= (1 - groundDrag * Time.deltaTime);
+                currentSpeed.z *= (1 - groundDrag * Time.deltaTime);
+                rb.linearVelocity = currentSpeed;
+            }
+        }
     }
 }
