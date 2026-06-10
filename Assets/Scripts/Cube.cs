@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Cube : MonoBehaviour
 {
-    int n = 0;
+    //int n = 0;
 
     float spinSpeed = 50.0f;
 

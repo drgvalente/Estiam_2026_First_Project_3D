@@ -18,6 +18,13 @@ public class BetterPlayerController : MonoBehaviour
     public LayerMask groundLayer; // select the Layer in Inspector
     public float radiusDistance = 0.1f; // this is the minimum distance from the floor for the player is considered "in ground"
 
+    [Header("Shoot")]
+    public GameObject bulletPrefab;
+    public Transform muzzle;
+    public Transform gunContainer;
+    public float shootCooldown = 1f; // time between shoots
+    public float lastShoot = 0f; // time since our last shoot - a chronometer
+
     // Control private variables:
     private Rigidbody rb;
     private float cameraRotationX = 0f;
@@ -42,6 +49,9 @@ public class BetterPlayerController : MonoBehaviour
 
         // 2. Test collision with the ground
         CheckGround();
+
+        // 4. Shooting
+        HandleShooting();
     }
 
     // Fixed Update is called at a fixed rate of FPS "paired" with unity's physics phase
@@ -69,9 +79,9 @@ public class BetterPlayerController : MonoBehaviour
         // Clamps the camera rotation limits so it doesnt go upside down
         cameraRotationX = Mathf.Clamp(cameraRotationX, camMinAngle, camMaxAngle);
 
-        // Apply the local rotation to the camera container
+        // Apply the local rotation to the camera container and gun container
         cameraContainer.localRotation = Quaternion.Euler(cameraRotationX, 0f, 0f);
-
+        gunContainer.localRotation = Quaternion.Euler(cameraRotationX, 0f, 0f);
     }
 
     private void CheckGround()
@@ -116,4 +126,24 @@ public class BetterPlayerController : MonoBehaviour
             }
         }
     }
+
+    void Shoot()
+    {
+        // just instantiate the bullet
+        // as the Muzzle already inherit the rotation of the gunContainer
+        // the bullet will be created already oriented to the front of the player
+        Instantiate(bulletPrefab, muzzle.position, muzzle.rotation);
+    }
+
+    void HandleShooting()
+    {
+        lastShoot += Time.deltaTime; // add time in seconds since last frame
+        // test if player JUST clicked left mouse button (0)
+        if (Input.GetMouseButtonDown(0) && lastShoot >= shootCooldown)
+        {
+            Shoot();
+            lastShoot = 0f; // reset the cooldown
+        }
+    }
 }
+
