@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -14,11 +15,41 @@ public class LevelManager : MonoBehaviour
     void Start()
     {
         currentEnemyCount = FindObjectsByType<Enemy>().Length;
+        StartCoroutine(SpawnRoutine());
     }
 
-    // Update is called once per frame
-    void Update()
+    // Coroutine: function that "pauses" it's execution for some time
+    private IEnumerator SpawnRoutine()
     {
-        
+        while (true)
+        {
+            // wait (pauses) the time in timeBetweenSpawns
+            yield return new WaitForSeconds(timeBetweenSpawns);
+
+            // Instantiate (create) an enemy IF the maxEnemies is not reached
+            if (currentEnemyCount < maxEnemies)
+            {
+                SpawnEnemy();
+            }
+        }
     }
+
+    private void SpawnEnemy()
+    {
+        // 1. Choose a random spawn point in the array
+        int randomIndex = Random.Range(0, spawnPoints.Length);
+        Transform chosenPoint = spawnPoints[randomIndex];
+
+        // 2. Instantiate the enemy at chosen position and rotation
+        Instantiate(enemyPrefab, chosenPoint.position, chosenPoint.rotation);
+
+        // 3. Increments the counter
+        currentEnemyCount++;
+    }
+
+    public void EnemyDied()
+    {
+        currentEnemyCount--;
+    }
+
 }

@@ -58,6 +58,12 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
+        // Seek the spawner and tell this enemy died
+        LevelManager spawner = FindFirstObjectByType<LevelManager>();
+        if (spawner != null)
+        {
+            spawner.EnemyDied();
+        }
         Destroy(gameObject);
     }
 
