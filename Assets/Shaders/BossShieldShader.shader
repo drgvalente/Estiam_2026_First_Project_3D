@@ -2,10 +2,10 @@ Shader "Custom/BossShieldShader"
 {
     Properties
     {
-        _Color ("Cor do Escudo", Color) = (0, 1, 1, 1)
-        _Opacity ("Transparencia Base", Range(0, 1)) = 0.2
-        _ImpactColor ("Cor do Impacto", Color) = (1, 1, 1, 1)
-        _ImpactRadius ("Tamanho do Impacto", Float) = 1.5
+        _Color ("Shield Color", Color) = (0, 1, 1, 1)
+        _Opacity ("Base Transparency", Range(0, 1)) = 0.2
+        _ImpactColor ("Impact Color", Color) = (1, 1, 1, 1)
+        _ImpactRadius ("Impact Size", Float) = 1.5
 
         // 4 variáveis para guardar os 4 impactos (X,Y,Z = Posição, W = Intensidade)
         _Impact0 ("Impact 0", Vector) = (0,0,0,0)
@@ -36,7 +36,7 @@ Shader "Custom/BossShieldShader"
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
-                float3 positionWS : TEXCOORD0;
+                float3 positionWS : TEXCOORD0; // Espaço Mundial
             };
 
             // Variáveis ligadas ao Inspector
@@ -49,7 +49,8 @@ Shader "Custom/BossShieldShader"
             Varyings vert(Attributes input)
             {
                 Varyings output;
-                output.positionWS = TransformObjectToWorld(input.positionOS.xyz); // Converte para Mundo
+                // Converte posição local para o Espaço Mundial e para a tela
+                output.positionWS = TransformObjectToWorld(input.positionOS.xyz);
                 output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
                 return output;
             }

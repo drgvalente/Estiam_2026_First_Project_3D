@@ -43,7 +43,10 @@ public class BossShieldController : MonoBehaviour
         // Se algo mudou, atualiza o shader para não gastar processamento à toa
         if (changed)
         {
-            shieldMaterial.SetVectorArray("_Impacts", impacts);
+            shieldMaterial.SetVector("_Impact0", impacts[0]);
+            shieldMaterial.SetVector("_Impact1", impacts[1]);
+            shieldMaterial.SetVector("_Impact2", impacts[2]);
+            shieldMaterial.SetVector("_Impact3", impacts[3]);
         }
     }
 
@@ -54,7 +57,10 @@ public class BossShieldController : MonoBehaviour
         impacts[nextImpactIndex] = new Vector4(hitPoint.x, hitPoint.y, hitPoint.z, 1f);
 
         // Atualiza o shader imediatamente
-        shieldMaterial.SetVectorArray("_Impacts", impacts);
+        shieldMaterial.SetVector("_Impact0", impacts[0]);
+        shieldMaterial.SetVector("_Impact1", impacts[1]);
+        shieldMaterial.SetVector("_Impact2", impacts[2]);
+        shieldMaterial.SetVector("_Impact3", impacts[3]);
 
         // Passa para o próximo índice (volta pra 0 quando chega em 4)
         nextImpactIndex = (nextImpactIndex + 1) % impacts.Length;

@@ -26,6 +26,10 @@ public class Bullet : MonoBehaviour
             //Destroy(col.transform.gameObject); // destroy the gameobject this bullet hit
             col.transform.GetComponent<Enemy>().TakeDamage(damage, transform.forward, impactForce);
         }
+        if (col.transform.CompareTag("Zombie"))
+        {
+            col.transform.GetComponent<Zombie>().TakeDamage(damage, transform.forward, impactForce);
+        }
         Destroy(gameObject);
     }
 

@@ -9,6 +9,7 @@ TagManager:
   - Walls
   - Bullet
   - Shield
+  - Zombie
   layers:
   - Default
   - TransparentFX
