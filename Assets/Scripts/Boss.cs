@@ -61,22 +61,56 @@ public class Boss : MonoBehaviour
         }
         else
         {
+            
             // is not in attack range: pursue the Player
             agent.isStopped = false;
             anim.SetBool("isWalking", true);
             agent.SetDestination(player.position);
+
+            // Ensures we are not attacking while walking (safety)
+            anim.SetBool("isAttacking1", false);
+            anim.SetBool("isAttacking2", false);
         }
         
     }
 
     void Attack()
     {
+        // Sorteia um número: 0 ou 1
+        int randomAttack = Random.Range(0, 2);
 
+        if (randomAttack == 0)
+        {
+            // Ataque 1 (Mutant Punch)
+            anim.SetBool("isAttacking1", true);
+            anim.SetBool("isAttacking2", false);
+            StartCoroutine(ResetAttackBool("isAttacking1", 1.1f)); // Tempo estimado da animação
+        }
+        else
+        {
+            // Ataque 2 (Mutant Swiping)
+            anim.SetBool("isAttacking2", true);
+            anim.SetBool("isAttacking1", false);
+            StartCoroutine(ResetAttackBool("isAttacking2", 2.667f)); // Tempo estimado da animação
+        }
     }
 
     void FaceTarget(Vector3 targetPosition)
     {
+        Vector3 direction = (targetPosition - transform.position).normalized;
+        direction.y = 0; // Ignora o eixo Y para não inclinar o Boss
+        if (direction != Vector3.zero)
+        {
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+        }
+    }
 
+    // Coroutine para desligar a bool de ataque depois que a animação acabar
+    private IEnumerator ResetAttackBool(string boolName, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        anim.SetBool(boolName, false);
     }
 
     void FixedUpdate()

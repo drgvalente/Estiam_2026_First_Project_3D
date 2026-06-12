@@ -29,4 +29,33 @@ public class Bullet : MonoBehaviour
         Destroy(gameObject);
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        // 1. Verifica se acertou o Escudo primeiro
+        if (other.CompareTag("Shield")) // Crie a Tag "Shield" e coloque na Sphere
+        {
+            BossShieldController shield = other.GetComponent<BossShieldController>();
+            if (shield != null)
+            {
+                // Passa o PONTO EXATO mundial onde a bala encostou
+                shield.RegisterHit(transform.position);
+            }
+
+            // Destroi a bala ao atingir o escudo
+            Destroy(gameObject);
+            return; // Sai da função para não executar o código abaixo
+        }
+
+        // 2. Se não for escudo, verifica se acertou o Inimigo (código antigo)
+        if (other.CompareTag("Enemy"))
+        {
+            // ... seu código de dano no inimigo ...
+            Destroy(gameObject);
+        }
+        else if (!other.CompareTag("Player") && !other.CompareTag("Bullet"))
+        {
+            Destroy(gameObject);
+        }
+    }
+
 }
